@@ -1,0 +1,44 @@
+[tool.poetry]
+name = "async-download-service"
+version = "0.1.0"
+description = ""
+authors = ["Skirda Matvei <skirdamatvei@yandex.ru>"]
+
+[tool.poetry.dependencies]
+python = "^3.11"
+aiohttp = "^3.8.3"
+aiofiles = "^23.1.0"
+
+[tool.poetry.dev-dependencies]
+flake8 = "^6.0.0"
+pytest = "^7.2.1"
+isort = "^5.12.0"
+Flake8-pyproject = "^1.2.2"
+
+[build-system]
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"
+
+[tool.flake8]
+max-line-length = 120
+ignore = [
+    "B010",  # Do not call setattr(x, 'attr', val), instead use normal property access: x.attr = val
+    "DJ01",  # Avoid using null=True on string-based fields such as CharField and TextField
+    "E501",  # Line too long
+    "E265",  # Block comments should have one space before the pound sign (#) and the comment itself
+    "F811",  # Redefinition of unused name from line n
+    "FS003",  # f-string missing prefix
+    "PIE783",  # Warn about Celery task definitions that don't have explicit names
+    "PIE785",  # Celery tasks can bunch up if they don't have expirations
+    "PIE801",  # Return boolean expressions directly instead of returning True and False
+    "PT001",  # Use @pytest.fixture() over @pytest.fixture
+    "SIM102",  # Use a single if-statement instead of nested if-statements
+    "SIM113",  # Use enumerate instead of manually incrementing a counter
+    "VNE003",  # Variable names that shadow builtins are not allowed
+    "W504",  # Line breaks should occur before the binary operator to keep all operators aligned
+]
+exclude = [
+    ".venv",
+    ".git",
+    "__pycache__",
+]
