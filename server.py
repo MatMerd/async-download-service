@@ -11,7 +11,7 @@ from aiohttp import web
 server_logger = logging.getLogger(__name__)
 
 
-async def archivate(request: web.Request, photos_path, internal_time):
+async def archive(request: web.Request, photos_path, internal_time):
     response = web.StreamResponse()
     archive_hash = request.match_info.get("archive_hash", "archive.zip")
     if not os.path.isdir(os.path.join(photos_path, archive_hash)) or archive_hash == "." or archive_hash == "..":
@@ -43,7 +43,7 @@ async def archivate(request: web.Request, photos_path, internal_time):
     return response
 
 
-async def handle_index_page(request):
+async def handle_index_page(request: web.Request):
     async with aiofiles.open('index.html', mode='r') as index_file:
         index_contents = await index_file.read()
     return web.Response(text=index_contents, content_type='text/html')
@@ -86,11 +86,11 @@ def main():
 
     photos_path = args.photos_path
 
-    archivate_partial = partial(archivate, photos_path=photos_path, internal_time=internal_time)
+    archive_partial = partial(archive, photos_path=photos_path, internal_time=internal_time)
 
     app.add_routes([
         web.get('/', handle_index_page),
-        web.get('/archive/{archive_hash}/', archivate_partial),
+        web.get('/archive/{archive_hash}/', archive_partial),
     ])
     web.run_app(app)
 
