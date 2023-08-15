@@ -47,10 +47,10 @@ async def archive(request: web.Request, photos_path, internal_time):
         server_logger.error(f"Dowload was interrupted. Error:\n{str(ex)}")
         raise
     finally:
-        await proc.communicate()
         server_logger.info(f"process end with code: {proc.returncode}")
         if proc.returncode != 0:
             proc.kill()
+        await proc.communicate()
     return response
 
 
