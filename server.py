@@ -13,7 +13,15 @@ server_logger = logging.getLogger(__name__)
 
 async def archive(request: web.Request, photos_path, internal_time):
     response = web.StreamResponse()
-    archive_hash = request.match_info.get("archive_hash", "archive.zip")
+    try:
+        archive_hash = request.match_info["archive_hash"]
+    except KeyError:
+        return web.Response(
+            text="<h1>404 <br>Archive hash must be exists</h1><a href='/'>main page</a>",
+            status=404,
+            content_type="text/html"
+        )
+
     if not os.path.isdir(os.path.join(photos_path, archive_hash)) or archive_hash == "." or archive_hash == "..":
         return web.Response(
             text="<h1>404 <br>Archive not exists or has been deleted</h1><a href='/'>main page</a>",
@@ -35,11 +43,14 @@ async def archive(request: web.Request, photos_path, internal_time):
             server_logger.info(f"Sending archive chunk {len(photos_in_zip)}")
             await response.write(photos_in_zip)
             await asyncio.sleep(internal_time)
-    except CancelledError as e:
-        server_logger.error(f"Dowload was interrupted. Error:\n{str(e)}")
+    except (CancelledError, ConnectionResetError) as ex:
+        server_logger.error(f"Dowload was interrupted. Error:\n{str(ex)}")
         raise
     finally:
         await proc.communicate()
+        server_logger.info(f"process end with code: {proc.returncode}")
+        if proc.returncode != 0:
+            proc.kill()
     return response
 
 
